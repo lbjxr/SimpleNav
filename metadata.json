@@ -1,0 +1,6 @@
+{
+  "name": "清新导航页",
+  "description": "一个清爽干净、支持分类管理的个人网址导航页，数据保存在浏览器本地缓存中。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
