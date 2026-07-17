@@ -62,7 +62,7 @@ export function Header({
   };
 
   return (
-    <header className={`sticky top-0 z-40 w-full border-b ${activeThemeConfig.border} bg-[#FDFCF9]/90 backdrop-blur-md`}>
+    <header className={`sticky top-0 z-40 w-full border-b ${activeThemeConfig.border} ${activeThemeConfig.bgHeader} bg-opacity-90 backdrop-blur-md transition-all duration-300`}>
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-3.5 sm:flex-row sm:gap-2 md:px-8">
         
         {/* Logo / Brand */}
@@ -84,14 +84,14 @@ export function Header({
         {preferences.searchBarEnabled && (
           <form
             onSubmit={handleSearchSubmit}
-            className={`relative flex w-full max-w-xl items-center rounded-2xl border ${activeThemeConfig.border} bg-[#F2F0E9] p-1 transition-all focus-within:border-sage-500 focus-within:bg-[#FDFCF9] focus-within:ring-4 focus-within:ring-sage-100/50`}
+            className={`relative flex w-full max-w-xl items-center rounded-2xl border ${activeThemeConfig.border} ${activeThemeConfig.bgSidebar} p-1 transition-all focus-within:border-transparent focus-within:bg-white focus-within:ring-4 focus-within:ring-[#000000]/5`}
           >
             {/* Engine Selector Dropdown */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setIsEngineDropdownOpen(!isEngineDropdownOpen)}
-                className="flex items-center gap-1.5 rounded-xl bg-[#FDFCF9] px-3 py-1.5 text-xs font-semibold text-[#5A5A58] shadow-xs hover:bg-[#F2F0E9] transition-all border border-[#E5E2D9]"
+                className={`flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-[#5A5A58] shadow-xs hover:${activeThemeConfig.bgSidebar} transition-all border ${activeThemeConfig.border}`}
               >
                 <LucideIcon name={selectedEngine.icon} size={14} className={activeThemeConfig.accentText} />
                 <span>{selectedEngine.name}</span>
@@ -109,7 +109,7 @@ export function Header({
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute left-0 mt-2 z-50 w-36 rounded-xl border border-[#E5E2D9] bg-[#FDFCF9] p-1.5 shadow-xl"
+                      className={`absolute left-0 mt-2 z-50 w-36 rounded-xl border ${activeThemeConfig.border} bg-white p-1.5 shadow-xl`}
                     >
                       {SEARCH_ENGINES.map((engine) => (
                         <button
@@ -123,7 +123,7 @@ export function Header({
                           className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium transition-colors ${
                             selectedEngine.id === engine.id
                               ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText} font-semibold`
-                              : "text-[#7C7A74] hover:bg-[#F2F0E9]"
+                              : `text-[#7C7A74] hover:${activeThemeConfig.bgSidebar}`
                           }`}
                         >
                           <LucideIcon name={engine.icon} size={13} className={selectedEngine.id === engine.id ? activeThemeConfig.accentText : "text-[#AAA8A2]"} />
@@ -157,7 +157,7 @@ export function Header({
                   <Plus size={14} className="rotate-45" />
                 </button>
               ) : (
-                <span className="hidden items-center gap-0.5 rounded-md border border-[#E5E2D9] bg-[#FDFCF9] px-1.5 py-0.5 font-mono text-[9px] font-medium text-[#AAA8A2] md:flex">
+                <span className={`hidden items-center gap-0.5 rounded-md border ${activeThemeConfig.border} bg-white px-1.5 py-0.5 font-mono text-[9px] font-medium text-[#AAA8A2] md:flex`}>
                   <Keyboard size={10} />
                   <span>/</span>
                 </span>
@@ -181,7 +181,7 @@ export function Header({
             onClick={onToggleAdmin}
             className={`flex items-center justify-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer shadow-xs ${
               isAdminOpen 
-                ? `bg-white border-[#E5E2D9] ${activeThemeConfig.accentText} hover:bg-[#F2F0E9]`
+                ? `bg-white border-transparent ${activeThemeConfig.accentText} hover:${activeThemeConfig.bgSidebar}`
                 : `text-white ${activeThemeConfig.accentBg} ${activeThemeConfig.accentBgHover} ${activeThemeConfig.shadow}`
             }`}
             title="进入后台配置管理站点选项"
@@ -194,7 +194,7 @@ export function Header({
           {!isAdminOpen && (
             <button
               onClick={onOpenBackup}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E5E2D9] bg-[#FDFCF9] px-3 py-1.5 text-xs font-semibold text-[#5A5A58] hover:bg-[#F2F0E9] hover:text-[#3C3C3B] hover:border-[#AAA8A2] shadow-xs transition-all cursor-pointer"
+              className={`flex items-center justify-center gap-1.5 rounded-xl border ${activeThemeConfig.border} bg-white px-3 py-1.5 text-xs font-semibold text-[#5A5A58] hover:${activeThemeConfig.bgSidebar} hover:text-[#3C3C3B] hover:border-transparent shadow-xs transition-all cursor-pointer`}
               title="备份或管理我的自定义数据"
             >
               <Database size={13} />
@@ -206,7 +206,7 @@ export function Header({
           {!isAdminOpen && (
             <button
               onClick={onAddCategory}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E5E2D9] bg-[#FDFCF9] px-3 py-1.5 text-xs font-semibold text-[#5A5A58] hover:bg-[#F2F0E9] hover:text-[#3C3C3B] hover:border-[#AAA8A2] shadow-xs transition-all cursor-pointer"
+              className={`flex items-center justify-center gap-1.5 rounded-xl border ${activeThemeConfig.border} bg-white px-3 py-1.5 text-xs font-semibold text-[#5A5A58] hover:${activeThemeConfig.bgSidebar} hover:text-[#3C3C3B] hover:border-transparent shadow-xs transition-all cursor-pointer`}
             >
               <Plus size={13} />
               <span className="hidden md:inline">新分类</span>

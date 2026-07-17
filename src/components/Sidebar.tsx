@@ -39,7 +39,7 @@ export function Sidebar({
       <div className="sticky top-[80px] space-y-6">
         
         {/* Category Menu card */}
-        <div className="rounded-2xl border border-[#E5E2D9] bg-[#F2F0E9] p-4 shadow-xs">
+        <div className={`rounded-2xl border ${activeThemeConfig.border} ${activeThemeConfig.bgSidebar} p-4 shadow-xs`}>
           <div className="mb-4 flex items-center justify-between px-2">
             <h2 className="font-display text-xs font-bold uppercase tracking-widest text-[#9A9892] flex items-center gap-1.5">
               <Layers size={13} />
@@ -61,18 +61,18 @@ export function Sidebar({
               onClick={() => setActiveCategory("all")}
               className={`flex items-center gap-3 w-full rounded-xl px-4 py-2.5 text-left text-xs font-bold whitespace-nowrap transition-all cursor-pointer border ${
                 activeCategory === "all"
-                  ? "bg-white text-[#5A5A58] shadow-xs border-[#E5E2D9]"
-                  : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B] border-transparent"
+                  ? `bg-white text-[#5A5A58] shadow-xs border ${activeThemeConfig.border}`
+                  : "text-[#7C7A74] hover:bg-white/40 hover:text-[#3C3C3B] border-transparent"
               }`}
             >
               <div className={`flex h-5 w-5 items-center justify-center rounded-md ${
-                activeCategory === "all" ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-[#E5E2D9] text-[#7C7A74]"
+                activeCategory === "all" ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-black/5 text-[#7C7A74]"
               }`}>
                 <Layers size={12} />
               </div>
               <span className="flex-1">全部网址</span>
               <span className={`rounded-full px-2 py-0.5 text-[10px] ${
-                activeCategory === "all" ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-[#E5E2D9] text-[#7C7A74]"
+                activeCategory === "all" ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-black/5 text-[#7C7A74]"
               }`}>
                 {links.length}
               </span>
@@ -88,8 +88,8 @@ export function Sidebar({
                   key={category.id}
                   className={`group relative flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all text-xs font-bold whitespace-nowrap border ${
                     isActive
-                      ? "bg-white text-[#5A5A58] shadow-xs border-[#E5E2D9]"
-                      : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B] border-transparent"
+                      ? `bg-white text-[#5A5A58] shadow-xs border ${activeThemeConfig.border}`
+                      : "text-[#7C7A74] hover:bg-white/40 hover:text-[#3C3C3B] border-transparent"
                   }`}
                 >
                   {/* Select Trigger Area */}
@@ -98,26 +98,26 @@ export function Sidebar({
                     className="flex flex-1 items-center gap-3 text-left outline-none cursor-pointer"
                   >
                     <div className={`flex h-5 w-5 items-center justify-center rounded-md transition-colors ${
-                      isActive ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-[#E5E2D9] text-[#7C7A74]"
+                      isActive ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-black/5 text-[#7C7A74]"
                     }`}>
                       <LucideIcon name={category.icon} size={12} />
                     </div>
                     <span className="flex-1 truncate">{category.name}</span>
                     <span className={`rounded-full px-2 py-0.5 text-[10px] transition-colors ${
-                      isActive ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText} font-bold` : "bg-[#E5E2D9] text-[#7C7A74]"
+                      isActive ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText} font-bold` : "bg-black/5 text-[#7C7A74]"
                     }`}>
                       {linkCount}
                     </span>
                   </button>
 
                   {/* Hover Controls (Desktop Only) */}
-                  <div className="hidden md:flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2 bg-[#FDFCF9]/95 p-0.5 rounded-lg border border-[#E5E2D9] shadow-sm">
+                  <div className={`hidden md:flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity ml-2 bg-white p-0.5 rounded-lg border ${activeThemeConfig.border} shadow-sm`}>
                     {/* Move Up */}
                     <button
                       disabled={index === 0}
                       onClick={() => onMoveCategory(category.id, "up")}
                       className={`rounded p-0.5 transition-colors ${
-                        index === 0 ? "text-[#D6D2C4] cursor-not-allowed" : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B]"
+                        index === 0 ? "text-neutral-300 cursor-not-allowed" : "text-[#7C7A74] hover:bg-neutral-100 hover:text-[#3C3C3B]"
                       }`}
                       title="上移"
                     >
@@ -128,7 +128,7 @@ export function Sidebar({
                       disabled={index === sortedCategories.length - 1}
                       onClick={() => onMoveCategory(category.id, "down")}
                       className={`rounded p-0.5 transition-colors ${
-                        index === sortedCategories.length - 1 ? "text-[#D6D2C4] cursor-not-allowed" : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B]"
+                        index === sortedCategories.length - 1 ? "text-neutral-300 cursor-not-allowed" : "text-[#7C7A74] hover:bg-neutral-100 hover:text-[#3C3C3B]"
                       }`}
                       title="下移"
                     >
@@ -137,7 +137,7 @@ export function Sidebar({
                     {/* Edit */}
                     <button
                       onClick={() => onEditCategory(category)}
-                      className={`rounded p-0.5 text-[#7C7A74] hover:bg-[#EAE7DE] ${activeThemeConfig.accentText} transition-colors`}
+                      className={`rounded p-0.5 text-[#7C7A74] hover:bg-neutral-100 ${activeThemeConfig.accentText} transition-colors`}
                       title="编辑"
                     >
                       <Edit2 size={12} />
@@ -149,7 +149,7 @@ export function Sidebar({
                           onDeleteCategory(category.id);
                         }
                       }}
-                      className="rounded p-0.5 text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-red-600 transition-colors"
+                      className="rounded p-0.5 text-[#7C7A74] hover:bg-neutral-100 hover:text-red-600 transition-colors"
                       title="删除"
                     >
                       <Trash2 size={12} />
@@ -162,13 +162,13 @@ export function Sidebar({
         </div>
 
         {/* Helpful Tips Card */}
-        <div className="hidden md:block rounded-2xl border border-[#E5E2D9] bg-[#F2F0E9] p-4.5 text-xs text-[#7C7A74] space-y-2.5">
+        <div className={`hidden md:block rounded-2xl border ${activeThemeConfig.border} ${activeThemeConfig.bgSidebar} p-4.5 text-xs text-[#7C7A74] space-y-2.5`}>
           <div className="font-semibold text-[#4A4A48] flex items-center gap-1.5">
             <Flame size={14} className={`${activeThemeConfig.accentText} animate-bounce`} />
             <span>极速使用指南</span>
           </div>
           <p className="leading-relaxed">
-            • 快捷搜索：随时在页面按 <code className="rounded border border-[#E5E2D9] bg-[#FDFCF9] px-1.5 py-0.5 text-[10px] font-semibold shadow-2xs font-mono">/</code> 键可瞬间聚焦搜索框。
+            • 快捷搜索：随时在页面按 <code className={`rounded border ${activeThemeConfig.border} bg-white px-1.5 py-0.5 text-[10px] font-semibold shadow-2xs font-mono`}>/</code> 键可瞬间聚焦搜索框。
           </p>
           <p className="leading-relaxed">
             • 回车搜索：在搜索框输入任意词汇，直接回车可在指定的外部引擎中搜索。

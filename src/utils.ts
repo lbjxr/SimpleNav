@@ -80,6 +80,8 @@ export interface ThemeConfig {
   name: string;
   bgPage: string;
   bgCard: string;
+  bgHeader: string;
+  bgSidebar: string;
   border: string;
   borderHover: string;
   textPrimary: string;
@@ -98,6 +100,8 @@ export const THEMES: ThemeConfig[] = [
     name: "雅致鼠尾草 (Sage Green)",
     bgPage: "bg-[#FDFCF9]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#FDFCF9]",
+    bgSidebar: "bg-[#F2F0E9]",
     border: "border-[#E5E2D9]",
     borderHover: "group-hover:border-sage-500 hover:border-sage-500",
     textPrimary: "text-[#3C3C3B]",
@@ -114,6 +118,8 @@ export const THEMES: ThemeConfig[] = [
     name: "温暖陶土 (Warm Clay)",
     bgPage: "bg-[#FCF9F8]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#FCF9F8]",
+    bgSidebar: "bg-[#F2ECE8]",
     border: "border-[#EADECE]",
     borderHover: "group-hover:border-[#C2A7A2] hover:border-[#C2A7A2]",
     textPrimary: "text-[#453F3E]",
@@ -130,6 +136,8 @@ export const THEMES: ThemeConfig[] = [
     name: "澄澈秋麦 (Earthy Wheat)",
     bgPage: "bg-[#FAF8F5]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#FAF8F5]",
+    bgSidebar: "bg-[#F0EDE5]",
     border: "border-[#EBE2D5]",
     borderHover: "group-hover:border-[#D1B894] hover:border-[#D1B894]",
     textPrimary: "text-[#47433B]",
@@ -146,6 +154,8 @@ export const THEMES: ThemeConfig[] = [
     name: "静谧海岩 (Ocean Slate)",
     bgPage: "bg-[#F5F8FA]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#F5F8FA]",
+    bgSidebar: "bg-[#EAF0F2]",
     border: "border-[#DFE5E8]",
     borderHover: "group-hover:border-[#9EABB3] hover:border-[#9EABB3]",
     textPrimary: "text-[#3B4247]",
@@ -162,6 +172,8 @@ export const THEMES: ThemeConfig[] = [
     name: "森林深处 (Forest Pine)",
     bgPage: "bg-[#F8FAF6]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#F8FAF6]",
+    bgSidebar: "bg-[#ECEFE9]",
     border: "border-[#E0E8DC]",
     borderHover: "group-hover:border-[#5C6857] hover:border-[#5C6857]",
     textPrimary: "text-[#353C33]",
@@ -178,6 +190,8 @@ export const THEMES: ThemeConfig[] = [
     name: "樱落粉黛 (Sakura Blush)",
     bgPage: "bg-[#FCF7F9]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#FCF7F9]",
+    bgSidebar: "bg-[#F5EAEE]",
     border: "border-[#F2DFE4]",
     borderHover: "group-hover:border-[#E8B0BE] hover:border-[#E8B0BE]",
     textPrimary: "text-[#4A3D40]",
@@ -194,6 +208,8 @@ export const THEMES: ThemeConfig[] = [
     name: "静谧薰衣 (Lavender Purple)",
     bgPage: "bg-[#F7F6FB]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#F7F6FB]",
+    bgSidebar: "bg-[#EBEAF5]",
     border: "border-[#E6E2F5]",
     borderHover: "group-hover:border-[#B3ACDE] hover:border-[#B3ACDE]",
     textPrimary: "text-[#3E3A4B]",
@@ -210,6 +226,8 @@ export const THEMES: ThemeConfig[] = [
     name: "深海墨蓝 (Midnight Indigo)",
     bgPage: "bg-[#F4F6F9]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#F4F6F9]",
+    bgSidebar: "bg-[#E5EAEF]",
     border: "border-[#E1E6EE]",
     borderHover: "group-hover:border-[#6C85AC] hover:border-[#6C85AC]",
     textPrimary: "text-[#313945]",
@@ -226,6 +244,8 @@ export const THEMES: ThemeConfig[] = [
     name: "晨光琥珀 (Warm Amber)",
     bgPage: "bg-[#FAF8F3]",
     bgCard: "bg-white",
+    bgHeader: "bg-[#FAF8F3]",
+    bgSidebar: "bg-[#F0EDE2]",
     border: "border-[#F4EDE0]",
     borderHover: "group-hover:border-[#E3C188] hover:border-[#E3C188]",
     textPrimary: "text-[#453F35]",
