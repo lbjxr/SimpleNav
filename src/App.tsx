@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Globe, Layers, AlertCircle, Sparkles, Pin } from "lucide-react";
-import { Category, LinkItem } from "./types";
+import { Category, LinkItem, AppPreferences } from "./types";
 import { DEFAULT_CATEGORIES, DEFAULT_LINKS } from "./data";
-import { generateId } from "./utils";
+import { generateId, THEMES, DEFAULT_PREFERENCES } from "./utils";
 
 // Component imports
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { LinkGrid } from "./components/LinkGrid";
+import { AdminPanel } from "./components/AdminPanel";
 import { CategoryModal, LinkModal, BackupModal } from "./components/Modals";
 
 // Cache Keys for Browser Local Storage
 const STORAGE_CATEGORIES_KEY = "nav_categories_cache";
 const STORAGE_LINKS_KEY = "nav_links_cache";
+const STORAGE_PREFERENCES_KEY = "nav_preferences_cache";
 
 export default function App() {
   // -------------------------------------------------------------
@@ -21,8 +23,10 @@ export default function App() {
   // -------------------------------------------------------------
   const [categories, setCategories] = useState<Category[]>([]);
   const [links, setLinks] = useState<LinkItem[]>([]);
+  const [preferences, setPreferences] = useState<AppPreferences>(DEFAULT_PREFERENCES);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   // Modal display states
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -61,6 +65,18 @@ export default function App() {
     } else {
       setLinks(DEFAULT_LINKS);
     }
+
+    // 3. Load Preferences
+    const cachedPrefs = localStorage.getItem(STORAGE_PREFERENCES_KEY);
+    if (cachedPrefs) {
+      try {
+        setPreferences(JSON.parse(cachedPrefs));
+      } catch (e) {
+        setPreferences(DEFAULT_PREFERENCES);
+      }
+    } else {
+      setPreferences(DEFAULT_PREFERENCES);
+    }
   }, []);
 
   // -------------------------------------------------------------
@@ -77,6 +93,10 @@ export default function App() {
       localStorage.setItem(STORAGE_LINKS_KEY, JSON.stringify(links));
     }
   }, [links]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_PREFERENCES_KEY, JSON.stringify(preferences));
+  }, [preferences]);
 
   // -------------------------------------------------------------
   // CATEGORY ACTIONS
@@ -218,14 +238,23 @@ export default function App() {
   // -------------------------------------------------------------
   // BACKUP, IMPORT & RESTORE SETTINGS
   // -------------------------------------------------------------
-  const handleImportData = (imported: { categories: Category[]; links: LinkItem[] }) => {
+  const handleSavePreferences = (newPrefs: Partial<AppPreferences>) => {
+    setPreferences((prev) => ({ ...prev, ...newPrefs }));
+  };
+
+  const handleImportData = (imported: { categories: Category[]; links: LinkItem[]; preferences?: AppPreferences }) => {
     // Wipe local cache first
     localStorage.removeItem(STORAGE_CATEGORIES_KEY);
     localStorage.removeItem(STORAGE_LINKS_KEY);
+    localStorage.removeItem(STORAGE_PREFERENCES_KEY);
 
     // Save and load
     setCategories(imported.categories);
     setLinks(imported.links);
+    if (imported.preferences) {
+      setPreferences(imported.preferences);
+      localStorage.setItem(STORAGE_PREFERENCES_KEY, JSON.stringify(imported.preferences));
+    }
     
     localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(imported.categories));
     localStorage.setItem(STORAGE_LINKS_KEY, JSON.stringify(imported.links));
@@ -234,65 +263,106 @@ export default function App() {
   const handleResetToDefault = () => {
     localStorage.removeItem(STORAGE_CATEGORIES_KEY);
     localStorage.removeItem(STORAGE_LINKS_KEY);
+    localStorage.removeItem(STORAGE_PREFERENCES_KEY);
     setCategories(DEFAULT_CATEGORIES);
     setLinks(DEFAULT_LINKS);
+    setPreferences(DEFAULT_PREFERENCES);
+    setIsAdminOpen(false);
   };
+
+  // Determine active theme configuration values
+  const activeThemeConfig = THEMES.find((t) => t.id === preferences.theme) || THEMES[0];
 
   // -------------------------------------------------------------
   // RENDER COMPONENT
   // -------------------------------------------------------------
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFCF9]">
+    <div className={`min-h-screen flex flex-col ${activeThemeConfig.bgPage} transition-colors duration-300`}>
       
-      {/* 1. Header with integrated fast-search bar */}
+      {/* 1. Header with integrated fast-search bar and preferences support */}
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onAddLink={handleOpenAddLink}
         onAddCategory={handleOpenAddCategory}
         onOpenBackup={() => setIsBackupModalOpen(true)}
+        preferences={preferences}
+        activeThemeConfig={activeThemeConfig}
+        isAdminOpen={isAdminOpen}
+        onToggleAdmin={() => setIsAdminOpen(!isAdminOpen)}
       />
 
-      {/* 2. Main Page Layout Grid */}
+      {/* 2. Main Layout - Conditional render with beautiful transitions */}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-8">
-        <div className="flex flex-col gap-6 md:flex-row">
-          
-          {/* Categories Sidebar navigation panel */}
-          <Sidebar
-            categories={categories}
-            links={links}
-            activeCategory={activeCategory}
-            setActiveCategory={setActiveCategory}
-            onEditCategory={handleOpenEditCategory}
-            onDeleteCategory={handleDeleteCategory}
-            onMoveCategory={handleMoveCategory}
-            onAddCategory={handleOpenAddCategory}
-          />
+        <AnimatePresence mode="wait">
+          {isAdminOpen ? (
+            <motion.div
+              key="admin-settings"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.2 }}
+            >
+              <AdminPanel
+                preferences={preferences}
+                activeThemeConfig={activeThemeConfig}
+                onUpdatePreferences={handleSavePreferences}
+                categories={categories}
+                links={links}
+                onUpdateCategories={setCategories}
+                onUpdateLinks={setLinks}
+                onClose={() => setIsAdminOpen(false)}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="main-grid"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.2 }}
+              className="flex flex-col gap-6 md:flex-row"
+            >
+              {/* Categories Sidebar navigation panel */}
+              <Sidebar
+                categories={categories}
+                links={links}
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+                onEditCategory={handleOpenEditCategory}
+                onDeleteCategory={handleDeleteCategory}
+                onMoveCategory={handleMoveCategory}
+                onAddCategory={handleOpenAddCategory}
+                activeThemeConfig={activeThemeConfig}
+              />
 
-          {/* Bookmarks link container */}
-          <LinkGrid
-            categories={categories}
-            links={links}
-            activeCategoryId={activeCategory}
-            searchQuery={searchQuery}
-            onEditLink={handleOpenEditLink}
-            onDeleteLink={handleDeleteLink}
-            onPinLink={handlePinLink}
-            onAddLinkWithCategory={handleOpenAddLinkWithCategory}
-            onIncrementClicks={handleIncrementClicks}
-          />
-
-        </div>
+              {/* Bookmarks link container */}
+              <LinkGrid
+                categories={categories}
+                links={links}
+                activeCategoryId={activeCategory}
+                searchQuery={searchQuery}
+                onEditLink={handleOpenEditLink}
+                onDeleteLink={handleDeleteLink}
+                onPinLink={handlePinLink}
+                onAddLinkWithCategory={handleOpenAddLinkWithCategory}
+                onIncrementClicks={handleIncrementClicks}
+                preferences={preferences}
+                activeThemeConfig={activeThemeConfig}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* 3. Footer credit block */}
-      <footer className="border-t border-[#F2F0E9] bg-[#F2F0E9]/30 py-6 mt-12 text-center text-xs text-[#AAA8A2] font-semibold">
+      {/* 3. Footer credit block styled with the current theme */}
+      <footer className={`border-t ${activeThemeConfig.border} bg-[#F2F0E9]/30 py-6 mt-12 text-center text-xs text-[#AAA8A2] font-semibold`}>
         <p className="flex items-center justify-center gap-1.5">
-          <span>© 2026 清新导航页</span>
+          <span>© 2026 {preferences.siteTitle}</span>
           <span className="text-[#E5E2D9]">|</span>
           <span className="flex items-center gap-0.5 text-sage-600">
-            <Sparkles size={11} />
-            <span>无后台零侵入设计</span>
+            <Sparkles size={11} className={activeThemeConfig.accentText} />
+            <span className={activeThemeConfig.accentText}>无后台零侵入设计</span>
           </span>
           <span className="text-[#E5E2D9]">|</span>
           <span>纯本地浏览器缓存存储</span>

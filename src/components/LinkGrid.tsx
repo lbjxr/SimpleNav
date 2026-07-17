@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Edit2, Trash2, Pin, PinOff, ExternalLink, Plus, Eye, Flame } from "lucide-react";
-import { Category, LinkItem } from "../types";
-import { getFaviconUrl } from "../utils";
+import { Category, LinkItem, AppPreferences } from "../types";
+import { getFaviconUrl, ThemeConfig } from "../utils";
 import { LucideIcon } from "./LucideIcon";
 
-// Individual Link Card with safe image handling and hover animations
+// Individual Link Card with safe image handling, hover animations, and dynamic sizing
 function LinkCard({
   link,
   onEdit,
   onDelete,
   onPin,
-  onClicked
+  onClicked,
+  preferences,
+  activeThemeConfig
 }: {
   link: LinkItem;
   onEdit: () => void;
   onDelete: () => void;
   onPin: () => void;
   onClicked: () => void;
+  preferences: AppPreferences;
+  activeThemeConfig: ThemeConfig;
   key?: string;
 }) {
   const [imgError, setImgError] = useState(false);
@@ -39,6 +43,31 @@ function LinkCard({
     return colors[code % colors.length];
   };
 
+  // Dynamic cardSize parameters
+  const cardPaddingClass = 
+    preferences.cardSize === "small" ? "p-3" : 
+    preferences.cardSize === "large" ? "p-6" : "p-4.5";
+
+  const avatarSizeClass = 
+    preferences.cardSize === "small" ? "h-8 w-8 p-1.5 rounded-lg" : 
+    preferences.cardSize === "large" ? "h-14 w-14 p-2.5 rounded-2xl" : "h-11 w-11 p-2 rounded-xl";
+
+  const avatarTextSizeClass = 
+    preferences.cardSize === "small" ? "text-xs h-8 w-8 rounded-lg" : 
+    preferences.cardSize === "large" ? "text-lg h-14 w-14 rounded-2xl" : "text-sm font-bold rounded-xl";
+
+  const titleSizeClass = 
+    preferences.cardSize === "small" ? "text-xs" : 
+    preferences.cardSize === "large" ? "text-base font-bold" : "text-sm font-semibold";
+
+  const descSizeClass = 
+    preferences.cardSize === "small" ? "mt-0.5 text-[10px] line-clamp-1" : 
+    preferences.cardSize === "large" ? "mt-1.5 text-xs text-[#9A9892] line-clamp-3 leading-relaxed" : "mt-1 text-xs line-clamp-2 leading-relaxed";
+
+  const footerClass = 
+    preferences.cardSize === "small" ? "mt-2 pt-1.5 border-t border-[#F2F0E9] flex items-center justify-between" : 
+    preferences.cardSize === "large" ? "mt-4.5 pt-3 border-t border-[#F2F0E9] flex items-center justify-between" : "mt-3.5 pt-2.5 border-t border-[#F2F0E9] flex items-center justify-between";
+
   return (
     <motion.div
       layout
@@ -46,9 +75,9 @@ function LinkCard({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className="group relative flex flex-col justify-between rounded-2xl border border-[#E5E2D9] bg-white p-4.5 shadow-xs transition-all hover:border-sage-500 hover:shadow-md hover:shadow-sage-100"
+      className={`group relative flex flex-col justify-between rounded-2xl border border-[#E5E2D9] bg-white shadow-xs transition-all ${cardPaddingClass} hover:${activeThemeConfig.border} hover:${activeThemeConfig.shadow}`}
     >
-      <div className="flex items-start gap-3.5">
+      <div className="flex items-start gap-3">
         {/* Favicon or Initial Avatar */}
         <a
           href={link.url}
@@ -58,7 +87,7 @@ function LinkCard({
           className="flex-shrink-0"
         >
           {!imgError && link.url ? (
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FDFCF9] border border-[#E5E2D9] p-2 transition-transform group-hover:scale-105">
+            <div className={`flex items-center justify-center bg-[#FDFCF9] border border-[#E5E2D9] transition-transform group-hover:scale-105 ${avatarSizeClass}`}>
               <img
                 src={getFaviconUrl(link.url)}
                 alt={link.title}
@@ -68,7 +97,7 @@ function LinkCard({
               />
             </div>
           ) : (
-            <div className={`flex h-11 w-11 items-center justify-center rounded-xl border text-sm font-bold uppercase ${getAvatarBg(link.title)}`}>
+            <div className={`flex items-center justify-center border uppercase ${avatarTextSizeClass} ${getAvatarBg(link.title)}`}>
               {link.title.charAt(0)}
             </div>
           )}
@@ -82,7 +111,7 @@ function LinkCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleCardClick}
-              className="font-display text-sm font-semibold text-[#4A4A48] hover:text-sage-600 transition-colors truncate block"
+              className={`font-display text-[#4A4A48] hover:${activeThemeConfig.accentText} transition-colors truncate block`}
               title={link.title}
             >
               {link.title}
@@ -91,7 +120,7 @@ function LinkCard({
           </div>
 
           <p
-            className="mt-1 text-xs text-[#9A9892] line-clamp-2 leading-relaxed"
+            className={`text-[#9A9892] ${descSizeClass}`}
             title={link.description || link.url}
           >
             {link.description || "暂无该网站的详细描述"}
@@ -100,7 +129,7 @@ function LinkCard({
       </div>
 
       {/* Footer statistics & Card action panel */}
-      <div className="mt-3.5 flex items-center justify-between border-t border-[#F2F0E9] pt-2.5">
+      <div className={footerClass}>
         {/* Visit stats */}
         <div className="flex items-center gap-2 text-[10px] font-medium text-[#9A9892]">
           <span className="flex items-center gap-0.5" title="累计访问次数">
@@ -108,7 +137,7 @@ function LinkCard({
             <span>{link.clickCount} 次</span>
           </span>
           {link.clickCount >= 10 && (
-            <span className="flex items-center gap-0.5 rounded-full bg-earth-clay/10 px-1.5 py-0.5 text-[9px] font-bold text-earth-clay">
+            <span className={`flex items-center gap-0.5 rounded-full ${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText} px-1.5 py-0.5 text-[9px] font-bold`}>
               <Flame size={10} />
               <span>热门</span>
             </span>
@@ -122,8 +151,8 @@ function LinkCard({
             onClick={onPin}
             className={`rounded-lg p-1 transition-colors cursor-pointer ${
               link.isPinned
-                ? "text-earth-wheat hover:bg-[#F2F0E9]"
-                : "text-[#AAA8A2] hover:bg-[#F2F0E9] hover:text-earth-wheat"
+                ? `${activeThemeConfig.accentText} hover:bg-[#F2F0E9]`
+                : `text-[#AAA8A2] hover:bg-[#F2F0E9] hover:${activeThemeConfig.accentText}`
             }`}
             title={link.isPinned ? "取消置顶" : "置顶推荐"}
           >
@@ -133,7 +162,7 @@ function LinkCard({
           {/* Edit */}
           <button
             onClick={onEdit}
-            className="rounded-lg p-1 text-[#AAA8A2] hover:bg-[#F2F0E9] hover:text-earth-taupe transition-colors cursor-pointer"
+            className="rounded-lg p-1 text-[#AAA8A2] hover:bg-[#F2F0E9] hover:text-[#5A5A58] transition-colors cursor-pointer"
             title="编辑"
           >
             <Edit2 size={13} />
@@ -146,7 +175,7 @@ function LinkCard({
                 onDelete();
               }
             }}
-            className="rounded-lg p-1 text-[#AAA8A2] hover:bg-[#F2F0E9] hover:text-earth-clay transition-colors cursor-pointer"
+            className="rounded-lg p-1 text-[#AAA8A2] hover:bg-[#F2F0E9] hover:text-red-500 transition-colors cursor-pointer"
             title="删除"
           >
             <Trash2 size={13} />
@@ -170,6 +199,8 @@ interface LinkGridProps {
   onPinLink: (id: string) => void;
   onAddLinkWithCategory: (categoryId: string) => void;
   onIncrementClicks: (id: string) => void;
+  preferences: AppPreferences;
+  activeThemeConfig: ThemeConfig;
 }
 
 export function LinkGrid({
@@ -181,7 +212,9 @@ export function LinkGrid({
   onDeleteLink,
   onPinLink,
   onAddLinkWithCategory,
-  onIncrementClicks
+  onIncrementClicks,
+  preferences,
+  activeThemeConfig
 }: LinkGridProps) {
   const query = searchQuery.toLowerCase().trim();
 
@@ -212,18 +245,32 @@ export function LinkGrid({
   // Checks if we should display an empty illustration
   const isEmpty = filteredLinks.length === 0;
 
+  // Grid columns class based on preferences.gridCols
+  const gridLayoutClass = 
+    preferences.gridCols === "2" 
+      ? "grid grid-cols-1 gap-5 md:grid-cols-2" 
+      : preferences.gridCols === "4" 
+      ? "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" 
+      : preferences.gridCols === "auto"
+      ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"; // "3" (normal) default
+
+  const quickAddCardHeight = 
+    preferences.cardSize === "small" ? "h-[80px]" : 
+    preferences.cardSize === "large" ? "h-[128px]" : "h-[104px]";
+
   return (
     <div className="flex-1 space-y-8">
       {/* 1. PINNED RECOMMENDED HIGHLIGHTS AREA */}
       {pinnedLinks.length > 0 && activeCategoryId === "all" && !query && (
-        <div className="space-y-3">
+        <div className="space-y-3 animate-fade-in">
           <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-md bg-earth-wheat/10 text-earth-wheat">
+            <span className={`flex h-5 w-5 items-center justify-center rounded-md ${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}`}>
               <Pin size={11} className="rotate-45" />
             </span>
             <h2 className="font-display text-sm font-bold text-[#4A4A48]">置顶推荐</h2>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={gridLayoutClass}>
             {pinnedLinks.map((link) => (
               <LinkCard
                 key={`pinned-${link.id}`}
@@ -232,6 +279,8 @@ export function LinkGrid({
                 onDelete={() => onDeleteLink(link.id)}
                 onPin={() => onPinLink(link.id)}
                 onClicked={() => onIncrementClicks(link.id)}
+                preferences={preferences}
+                activeThemeConfig={activeThemeConfig}
               />
             ))}
           </div>
@@ -253,7 +302,7 @@ export function LinkGrid({
           {!searchQuery && activeCategoryId !== "all" && (
             <button
               onClick={() => onAddLinkWithCategory(activeCategoryId)}
-              className="mt-4 rounded-xl bg-sage-500 px-4 py-2 text-xs font-semibold text-white hover:bg-sage-600 shadow-xs cursor-pointer"
+              className={`mt-4 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-xs cursor-pointer ${activeThemeConfig.accentBg} ${activeThemeConfig.accentBgHover}`}
             >
               立即新增网址
             </button>
@@ -288,7 +337,7 @@ export function LinkGrid({
 
                   <button
                     onClick={() => onAddLinkWithCategory(cat.id)}
-                    className="text-[11px] font-semibold text-sage-600 hover:text-sage-700 flex items-center gap-0.5 cursor-pointer"
+                    className={`text-[11px] font-bold ${activeThemeConfig.accentText} hover:opacity-80 flex items-center gap-0.5 cursor-pointer`}
                   >
                     <Plus size={12} />
                     <span>添加网址</span>
@@ -296,7 +345,7 @@ export function LinkGrid({
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className={gridLayoutClass}>
                   {catLinks.map((link) => (
                     <LinkCard
                       key={link.id}
@@ -305,20 +354,22 @@ export function LinkGrid({
                       onDelete={() => onDeleteLink(link.id)}
                       onPin={() => onPinLink(link.id)}
                       onClicked={() => onIncrementClicks(link.id)}
+                      preferences={preferences}
+                      activeThemeConfig={activeThemeConfig}
                     />
                   ))}
 
                   {/* Dashed Quick Add Card at the end of each category list */}
                   <button
                     onClick={() => onAddLinkWithCategory(cat.id)}
-                    className="group flex items-center justify-center gap-2.5 rounded-2xl border border-dashed border-[#E5E2D9] bg-[#FDFCF9]/50 p-4.5 hover:border-sage-300 hover:bg-sage-50/10 hover:shadow-xs transition-all text-[#AAA8A2] hover:text-sage-600 h-[104px] cursor-pointer"
+                    className={`group flex items-center justify-center gap-2.5 rounded-2xl border border-dashed border-[#E5E2D9] bg-[#FDFCF9]/50 p-4.5 hover:border-sage-300 hover:${activeThemeConfig.accentLight} hover:shadow-xs transition-all text-[#AAA8A2] hover:${activeThemeConfig.accentText} ${quickAddCardHeight} cursor-pointer`}
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E5E2D9] group-hover:border-sage-200 bg-white group-hover:bg-sage-50 transition-colors">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E5E2D9] group-hover:border-sage-200 bg-white group-hover:bg-white transition-colors">
                       <Plus size={15} />
                     </div>
                     <div className="text-left">
                       <div className="text-xs font-bold">新增网址</div>
-                      <div className="text-[10px] text-[#AAA8A2] group-hover:text-sage-600/80 mt-0.5">预填到 {cat.name}</div>
+                      <div className="text-[10px] text-[#AAA8A2] group-hover:opacity-90 mt-0.5">预填到 {cat.name}</div>
                     </div>
                   </button>
                 </div>

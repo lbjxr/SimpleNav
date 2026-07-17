@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { Edit2, Trash2, ChevronUp, ChevronDown, Flame, Layers } from "lucide-react";
 import { Category, LinkItem } from "../types";
 import { LucideIcon } from "./LucideIcon";
+import { ThemeConfig } from "../utils";
 
 interface SidebarProps {
   categories: Category[];
@@ -12,6 +13,7 @@ interface SidebarProps {
   onDeleteCategory: (id: string) => void;
   onMoveCategory: (id: string, direction: "up" | "down") => void;
   onAddCategory: () => void;
+  activeThemeConfig: ThemeConfig;
 }
 
 export function Sidebar({
@@ -22,7 +24,8 @@ export function Sidebar({
   onEditCategory,
   onDeleteCategory,
   onMoveCategory,
-  onAddCategory
+  onAddCategory,
+  activeThemeConfig
 }: SidebarProps) {
   // Helper to count links per category
   const getLinkCount = (catId: string) => {
@@ -44,7 +47,7 @@ export function Sidebar({
             </h2>
             <button
               onClick={onAddCategory}
-              className="text-[11px] font-semibold text-sage-600 hover:text-sage-700 hover:underline cursor-pointer"
+              className={`text-[11px] font-bold ${activeThemeConfig.accentText} hover:opacity-80 cursor-pointer`}
             >
               + 新增分类
             </button>
@@ -56,20 +59,20 @@ export function Sidebar({
             {/* "All" Option */}
             <button
               onClick={() => setActiveCategory("all")}
-              className={`flex items-center gap-3 w-full rounded-xl px-4 py-2.5 text-left text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center gap-3 w-full rounded-xl px-4 py-2.5 text-left text-xs font-bold whitespace-nowrap transition-all cursor-pointer border ${
                 activeCategory === "all"
-                  ? "bg-white text-[#5A5A58] shadow-xs border border-[#E5E2D9]"
-                  : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B]"
+                  ? "bg-white text-[#5A5A58] shadow-xs border-[#E5E2D9]"
+                  : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B] border-transparent"
               }`}
             >
               <div className={`flex h-5 w-5 items-center justify-center rounded-md ${
-                activeCategory === "all" ? "bg-sage-50 text-sage-600" : "bg-[#E5E2D9] text-[#7C7A74]"
+                activeCategory === "all" ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-[#E5E2D9] text-[#7C7A74]"
               }`}>
                 <Layers size={12} />
               </div>
               <span className="flex-1">全部网址</span>
               <span className={`rounded-full px-2 py-0.5 text-[10px] ${
-                activeCategory === "all" ? "bg-sage-100 text-sage-700" : "bg-[#E5E2D9] text-[#7C7A74]"
+                activeCategory === "all" ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-[#E5E2D9] text-[#7C7A74]"
               }`}>
                 {links.length}
               </span>
@@ -83,10 +86,10 @@ export function Sidebar({
               return (
                 <div
                   key={category.id}
-                  className={`group relative flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all text-xs font-semibold whitespace-nowrap ${
+                  className={`group relative flex items-center gap-2 rounded-xl px-4 py-2.5 transition-all text-xs font-bold whitespace-nowrap border ${
                     isActive
-                      ? "bg-white text-[#5A5A58] shadow-xs border border-[#E5E2D9]"
-                      : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B]"
+                      ? "bg-white text-[#5A5A58] shadow-xs border-[#E5E2D9]"
+                      : "text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-[#3C3C3B] border-transparent"
                   }`}
                 >
                   {/* Select Trigger Area */}
@@ -95,13 +98,13 @@ export function Sidebar({
                     className="flex flex-1 items-center gap-3 text-left outline-none cursor-pointer"
                   >
                     <div className={`flex h-5 w-5 items-center justify-center rounded-md transition-colors ${
-                      isActive ? "bg-sage-50 text-sage-600" : "bg-[#E5E2D9] text-[#7C7A74]"
+                      isActive ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText}` : "bg-[#E5E2D9] text-[#7C7A74]"
                     }`}>
                       <LucideIcon name={category.icon} size={12} />
                     </div>
                     <span className="flex-1 truncate">{category.name}</span>
                     <span className={`rounded-full px-2 py-0.5 text-[10px] transition-colors ${
-                      isActive ? "bg-sage-100 text-sage-700 font-bold" : "bg-[#E5E2D9] text-[#7C7A74]"
+                      isActive ? `${activeThemeConfig.accentLight} ${activeThemeConfig.accentLightText} font-bold` : "bg-[#E5E2D9] text-[#7C7A74]"
                     }`}>
                       {linkCount}
                     </span>
@@ -134,7 +137,7 @@ export function Sidebar({
                     {/* Edit */}
                     <button
                       onClick={() => onEditCategory(category)}
-                      className="rounded p-0.5 text-[#7C7A74] hover:bg-[#EAE7DE] hover:text-sage-600 transition-colors"
+                      className={`rounded p-0.5 text-[#7C7A74] hover:bg-[#EAE7DE] ${activeThemeConfig.accentText} transition-colors`}
                       title="编辑"
                     >
                       <Edit2 size={12} />
@@ -161,7 +164,7 @@ export function Sidebar({
         {/* Helpful Tips Card */}
         <div className="hidden md:block rounded-2xl border border-[#E5E2D9] bg-[#F2F0E9] p-4.5 text-xs text-[#7C7A74] space-y-2.5">
           <div className="font-semibold text-[#4A4A48] flex items-center gap-1.5">
-            <Flame size={14} className="text-sage-500 animate-bounce" />
+            <Flame size={14} className={`${activeThemeConfig.accentText} animate-bounce`} />
             <span>极速使用指南</span>
           </div>
           <p className="leading-relaxed">

@@ -20,3 +20,17 @@ export interface NavData {
   categories: Category[];
   links: LinkItem[];
 }
+
+export type ThemeId = "sage" | "clay" | "wheat" | "slate" | "pine" | "sakura" | "lavender" | "indigo" | "amber";
+export type CardSize = "small" | "medium" | "large";
+export type GridCols = "auto" | "2" | "3" | "4";
+
+export interface AppPreferences {
+  siteTitle: string;
+  siteSubtitle: string;
+  cardSize: CardSize;
+  theme: ThemeId;
+  searchBarEnabled: boolean;
+  defaultEngineId: string;
+  gridCols: GridCols;
+}
